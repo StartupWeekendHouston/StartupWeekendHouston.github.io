@@ -22,6 +22,27 @@ var geojsonFeature = {
       }
     },
     {
+      "id":"Design with Animals, by Ned Dodington",
+      "properties":{
+        "Time":"6 pm - 7:30 pm",
+        "LocationWebsite":"http://brightworkcoresearch.com/",
+        "Date":"Wed Mar 19 01:00:00 GMT-06:00 2014",
+        "Website":"http://brightworkcoresearch.com/event/design-animals-talk-ned-dodington/",
+        "Event":"Design with Animals, by Ned Dodington",
+        "Price":"free",
+        "Address":"5416 Chaucer Dr, Houston, TX 77005",
+        "geo_accuracy":"house",
+        "geo_longitude":-95.4140933557047,
+        "geo_latitude":29.717232261745,
+        "Space":"Brightwork CoResearch"
+      },
+      "type":"Feature",
+      "geometry":{
+        "type":"Point",
+        "coordinates":[-95.4140933557047,29.717232261745]
+      }
+    },
+    {
       "id":"Science Hack Day Houston",
       "properties":{
         "Time":"9am-5pm",
