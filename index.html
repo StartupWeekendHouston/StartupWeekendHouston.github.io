@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <meta content='width=device-width' name='viewport'>
+    <title>Startup Weekend Maker Edition Pre-Events!</title>
+
+
+    <link rel="stylesheet" href="assets/styles/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800|Kameron:400,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+      body, .leaflet-container{
+        font-family: 'Open Sans', "Helvetica Neue", Helvetica, sans-serif;
+      }
+      h1, h2, h3, h4, h5, h6{
+        font-family: 'Kameron', Arial, serif;
+        font-weight: 400;
+      }
+      a{
+        text-decoration: none;
+      }
+      a:hover{
+        text-decoration: underline;
+      }
+      #map{
+        height: 600px;
+      }
+      .leaflet-popup-content ul{
+        max-height: 180px;
+        overflow: auto;
+      }
+      .leaflet-popup-content ul{
+        list-style: none;
+        padding-left: 0;
+      }
+      .leaflet-popup-content h2,
+      .leaflet-popup-content h3,
+      .leaflet-popup-content p{
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .leaflet-popup-content li{
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Startup Weekend Maker Edition: Pre-Events!</h1>
+    <div id="map"></div>
+  </body>
+  <script src="assets/lodash.js"></script>
+  <script src="assets/leaflet.js"></script>
+  <script src="assets/maker-events.js"></script>
+  <script type="text/javascript">
+    // create a map in the "map" div, set the view to a given place and zoom
+    var map = L.map('map').setView([29.7336856, -95.3763752], 13);
+
+    // add an OpenStreetMap tile layer
+    // L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/pandafulmanda.hdml6bbc/{z}/{x}/{y}.png', {
+    // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
+      subdomains: 'abcd'
+    }).addTo(map);
+
+    var features = [],
+    perEventTemplate = '<li><h3 style="margin-bottom:0"><a href="<%- eventObj.Website %>" target="_blank"><%- eventObj.Event %></a></h3><p><strong><%- eventObj.Time %>, <%- eventObj.Date %></strong>, <%- eventObj.Price %></p></li>',
+    eventListing = '<ul style="max-height: 180px;overflow:auto"><% _.each(events, function(eventObj){ %>'+perEventTemplate+'<% }); %></ul>',
+    perLocationTemplate = '<h2><a href="<%- properties.website %>" target="_blank"><%- id %></a></h2><p><a href="https://maps.google.com/maps?q=<%- properties.address %>" target="_blank"><%- properties.address %></a></p>';
+
+    _.each(geojsonFeature.features, function(feature){
+      var eventObj = {},
+      locationObj = {
+        id : feature.properties.Space,
+        properties : {
+          address : feature.properties.Address,
+          website : feature.properties.LocationWebsite,
+          events : []
+        },
+        type : 'Feature',
+        geometry : _(feature.geometry).clone()
+      };
+
+      _(feature.properties).each(function(property, key){
+        var eventDate = {};
+
+        if(!((key == 'LocationWebsite') || (key == 'Address') || (key == 'Space') || (key == 'geo_accuracy') || (key == 'geo_longitude') || (key == 'geo_latitude'))){
+          if(key == 'Date'){
+            eventDate = new Date(property);
+            if(!_.isNaN(eventDate.getMonth())){
+              eventObj[key] = (eventDate.getMonth() + 1)+ '/' + eventDate.getDate() + '/' + eventDate.getFullYear();
+            }else{
+              eventObj[key] = property;
+            }
+          }else if(key== 'Price' && _.isNumber(property)){
+            eventObj[key] = '$'+property;
+          }else{
+            eventObj[key] = property;
+          }
+        }
+      });
+
+      if(!_.where(features, {'id': feature.properties.Space}).length){
+        features.push(locationObj);
+      }
+      _.where(features, {'id': feature.properties.Space})[0].properties.events.push(eventObj);
+    });
+
+
+    L.geoJson(features, {
+      onEachFeature: function(feature, layer){
+        var popupHtml = '', eventsHtml = '';
+
+        popupHtml = _.template(perLocationTemplate, feature);
+        if (feature.properties && feature.properties.events) {
+          eventsHtml = _.template(eventListing, {events : feature.properties.events});
+          popupHtml += eventsHtml;
+        }
+        feature.properties.description = popupHtml;
+        layer.bindPopup(popupHtml);
+      }
+    }).addTo(map);
+
+  </script>
+</html>
