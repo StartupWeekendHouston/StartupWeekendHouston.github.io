@@ -36,7 +36,7 @@
       ul{
         list-style: none;
         padding-left: 0;
-        max-height: 500px;
+        height: 500px;
         overflow: auto;
       }
       #space-info ul h2, .leaflet-control ul h2, .leaflet-popup-content ul h2,
@@ -72,8 +72,8 @@
         <h1>Startup Weekend Maker Edition: Pre-Events!</h1>
       </div>
       <div class="row">
-        <div id="map" class="col-xs-9"></div>
-        <div id="space-info" class="col-xs-3">
+        <div id="map" class="col-md-9 col-xs-12"></div>
+        <div id="space-info" class="col-md-3 col-xs-12">
           <h3>Ever wondered what it takes to be an entrepreneur?</h3> 
           <p>The professional and personal challenges, the high and lows, the failures and the success?</p>
           <p>Get your hands dirty at Houston's first ever <strong>Maker Edition Startup Weekend</strong>!  This will be like other Startup Weekends, but it's all about building a business around a physical product.</p>
@@ -133,7 +133,7 @@
 
 
     // create a map in the "map" div, set the view to a given place and zoom
-    var map = L.map('map').setView([29.7336856, -95.3763752], 13);
+    var map = L.map('map').setView([29.7336856, -95.3763752], 14).fitBounds([[29.715079,-95.4184255],[29.7510617,-95.3241206]]);
 
     // add an OpenStreetMap tile layer
     // L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -154,17 +154,9 @@
               eventsHtml = _.template(eventListing, {events : feature.properties.events});
               popupHtml += eventsHtml;
             }
-
             document.getElementById('space-info').innerHTML = popupHtml;
           }
           // console.log(e.target);
-          // e.target.icon = {
-          //   iconUrl: 'marker-icon-active.png',
-          //   iconRetinaUrl: 'marker-icon-active@2x.png'
-          // };
-          // e.target.setIcon({
-
-          // });
         }
       });
     }
