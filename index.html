@@ -9,6 +9,8 @@
 
 
     <link rel="stylesheet" href="assets/styles/leaflet.css" />
+    <link rel="stylesheet" href="assets/styles/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/styles/bootstrap-theme.min.css" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800|Kameron:400,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
       body, .leaflet-container{
@@ -27,48 +29,69 @@
       #map{
         height: 600px;
       }
-      .leaflet-popup-content ul{
+/*      .leaflet-control ul, .leaflet-popup-content ul{
         max-height: 180px;
         overflow: auto;
-      }
-      .leaflet-popup-content ul{
+      }*/
+      ul{
         list-style: none;
         padding-left: 0;
+        max-height: 500px;
+        overflow: auto;
       }
-      .leaflet-popup-content h2,
-      .leaflet-popup-content h3,
-      .leaflet-popup-content p{
+      #space-info ul h2, .leaflet-control ul h2, .leaflet-popup-content ul h2,
+      #space-info ul h3, .leaflet-control ul h3, .leaflet-popup-content ul h3,
+      #space-info ul h4, .leaflet-control ul h4, .leaflet-popup-content ul h4,
+      #space-info ul p, .leaflet-control ul p, .leaflet-popup-content ul p{
         margin-top: 0;
         margin-bottom: 0;
       }
-      .leaflet-popup-content li{
+      #space-info h3{
+        margin-top: 0;
+      }
+      #space-info li, .leaflet-control li, .leaflet-popup-content li{
         margin-bottom: 1em;
+      }
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip{
+        background: rgba(255, 255, 255, 0.85);
+      }
+      .info {
+        padding: 6px 8px;
+        background: white;
+        background: rgba(255,255,255,0.85);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        width: 100%;
       }
     </style>
   </head>
   <body>
-    <h1>Startup Weekend Maker Edition: Pre-Events!</h1>
-    <div id="map"></div>
+    <div class="container">
+      <div class="row">
+        <h1>Startup Weekend Maker Edition: Pre-Events!</h1>
+      </div>
+      <div class="row">
+        <div id="map" class="col-xs-9"></div>
+        <div id="space-info" class="col-xs-3">
+          <h3>Ever wondered what it takes to be an entrepreneur?</h3> 
+          <p>The professional and personal challenges, the high and lows, the failures and the success?</p>
+          <p>Get your hands dirty at Houston's first ever <strong>Maker Edition Startup Weekend</strong>!  This will be like other Startup Weekends, but it's all about building a business around a physical product.</p>
+          <p>Come pitch your startup idea and receive feedback from peers! Teams organically form around the top ideas (as determined by popular vote) and then it’s a 54 hour frenzy of business model creation, <strong>making</strong>, designing, and market validation. The weekend will culminate with presentations in front of local entrepreneurial leaders -- a great opportunity for critical feedback!</p>
+          <p>If you've ever thought about starting a business around physical products, <strong>from electronics to fashion</strong>, we'd love to see you!  <a href="http://swhouston0414.eventbrite.com" target="_blank">Register now</a> for the best weekend of your life!</p>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="assets/lodash.js"></script>
   <script src="assets/leaflet.js"></script>
   <script src="assets/maker-events.js"></script>
   <script type="text/javascript">
-    // create a map in the "map" div, set the view to a given place and zoom
-    var map = L.map('map').setView([29.7336856, -95.3763752], 13);
-
-    // add an OpenStreetMap tile layer
-    // L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    L.tileLayer('http://{s}.tiles.mapbox.com/v3/pandafulmanda.hdml6bbc/{z}/{x}/{y}.png', {
-    // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
-      subdomains: 'abcd'
-    }).addTo(map);
 
     var features = [],
-    perEventTemplate = '<li><h3 style="margin-bottom:0"><a href="<%- eventObj.Website %>" target="_blank"><%- eventObj.Event %></a></h3><p><strong><%- eventObj.Time %>, <%- eventObj.Date %></strong>, <%- eventObj.Price %></p></li>',
-    eventListing = '<ul style="max-height: 180px;overflow:auto"><% _.each(events, function(eventObj){ %>'+perEventTemplate+'<% }); %></ul>',
-    perLocationTemplate = '<h2><a href="<%- properties.website %>" target="_blank"><%- id %></a></h2><p><a href="https://maps.google.com/maps?q=<%- properties.address %>" target="_blank"><%- properties.address %></a></p>';
+    perEventTemplate = '<li><h4><a href="<%- eventObj.Website %>" target="_blank"><%- eventObj.Event %></a></h4><p><strong><%- eventObj.Time %><%-(eventObj.Time)? ",":""%> <%- eventObj.Date %></strong><%-(eventObj.Price)? ",":""%> <%- eventObj.Price %></p></li>',
+    eventListing = '<ul><% _.each(events, function(eventObj){ %>'+perEventTemplate+'<% }); %></ul>',
+    perLocationTemplate = '<h3><a href="<%- properties.website %>" target="_blank"><%- id %></a></h3><p><a href="https://maps.google.com/maps?q=<%- properties.address %>" target="_blank"><%- properties.address %></a></p>';
 
     _.each(geojsonFeature.features, function(feature){
       var eventObj = {},
@@ -109,19 +132,48 @@
     });
 
 
+    // create a map in the "map" div, set the view to a given place and zoom
+    var map = L.map('map').setView([29.7336856, -95.3763752], 13);
+
+    // add an OpenStreetMap tile layer
+    // L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/pandafulmanda.hdml6bbc/{z}/{x}/{y}.png', {
+    // L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://www.mapbox.com/about/maps/" target="_blank">MapBox</a>',
+      subdomains: 'abcd'
+    }).addTo(map);
+
+    function onEachFeature(feature, layer) {
+      layer.on({
+        mouseover: function(e){
+          var popupHtml = '', eventsHtml = '';
+
+          if(feature){
+            popupHtml = _.template(perLocationTemplate, feature);
+            if (feature.properties && feature.properties.events) {
+              eventsHtml = _.template(eventListing, {events : feature.properties.events});
+              popupHtml += eventsHtml;
+            }
+
+            document.getElementById('space-info').innerHTML = popupHtml;
+          }
+          // console.log(e.target);
+          // e.target.icon = {
+          //   iconUrl: 'marker-icon-active.png',
+          //   iconRetinaUrl: 'marker-icon-active@2x.png'
+          // };
+          // e.target.setIcon({
+
+          // });
+        }
+      });
+    }
+
     L.geoJson(features, {
       onEachFeature: function(feature, layer){
-        var popupHtml = '', eventsHtml = '';
-
-        popupHtml = _.template(perLocationTemplate, feature);
-        if (feature.properties && feature.properties.events) {
-          eventsHtml = _.template(eventListing, {events : feature.properties.events});
-          popupHtml += eventsHtml;
-        }
-        feature.properties.description = popupHtml;
-        layer.bindPopup(popupHtml);
+        onEachFeature(feature, layer);
       }
-    }).addTo(map).openPopup();
+    }).addTo(map);
 
   </script>
 </html>
